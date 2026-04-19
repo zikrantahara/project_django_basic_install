@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load static %} {% block title %}Tambah Data{% endblock %}
+
+{% block contents %} <div align="center">
+      <img src="{% static 'logopnl.png' %}" alt="Logo Web" width="200">
+   </div>
+
+   <h2>Tambah Data Perusahaan</h2>
+   <br>
+   
+   <form method="post">
+      {% csrf_token %} 
+      {{ form.as_p }} 
+      
+      <br>
+      <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
+         Simpan Data
+      </button>
+   </form>
+{% endblock %}

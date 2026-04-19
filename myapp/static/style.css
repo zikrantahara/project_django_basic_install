@@ -1,0 +1,14 @@
+h2 {
+   text-align: center;
+   font-size: xx-large; 
+   color: red;
+}
+
+ul li {
+   color: darkblue;
+   font-size: 20px; /* Tambahkan 'px' agar ukurannya terbaca jelas di browser */
+}
+
+body {
+   background-color: violet;
+}

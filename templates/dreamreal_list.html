@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Daftar Data{% endblock %}
+
+{% block contents %}
+   <h2>Daftar Perusahaan (Dreamreals):</h2>
+   <hr>
+   <ul>
+      {% for dr in object_list %}
+         <li><b>{{ dr.name }}</b> - Website: {{ dr.website }}</li>
+      {% endfor %}
+   </ul>
+{% endblock %}

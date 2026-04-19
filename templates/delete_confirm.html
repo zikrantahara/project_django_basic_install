@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Konfirmasi Hapus{% endblock %}
+
+{% block contents %}
+   <div style="border: 2px solid red; padding: 20px; max-width: 500px; margin-top: 20px;">
+      <h2>⚠️ Peringatan Hapus Data!</h2>
+      <p>
+         Apakah kamu yakin ingin menghapus data perusahaan <b>{{ obj.name }}</b> 
+         (Website: {{ obj.website }})? 
+         <br><br>
+         <i>Aksi ini tidak dapat dibatalkan.</i>
+      </p>
+      
+      <form method="post">
+         {% csrf_token %}
+         <button type="submit" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Ya, Hapus Data!
+         </button>
+         
+         <a href="/admin/myapp/dreamreal/" style="margin-left: 15px; text-decoration: none; color: #007bff;">
+            Batal & Kembali
+         </a>
+      </form>
+   </div>
+{% endblock %}
