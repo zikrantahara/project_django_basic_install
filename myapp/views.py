@@ -1,9 +1,17 @@
+from django.http import JsonResponse
+from myapp.forms import DreamrealForm
+from django_comments.models import Comment
+from myapp.models import Dreamreal
+from django.views.decorators.cache import cache_page
+import datetime
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .forms import DreamrealForm
 from .models import Dreamreal
 from django.core.mail import send_mail, mail_admins, EmailMessage
 from myapp.forms import LoginForm
+from myapp.forms import ProfileForm
+from myapp.models import Profile
 
 def addnew(request):
     # Jika user mengklik tombol Submit (Kirim Data)
@@ -106,18 +114,107 @@ def sendEmailWithAttach(request, emailto):
     
 
 def login(request):
-    if request.method == "POST":
+    username = 'not logged in'
+    
+    if request.method == 'POST':
         MyLoginForm = LoginForm(request.POST)
         
         if MyLoginForm.is_valid():
-            # JIKA SUKSES: Pindah ke halaman hasil
             username = MyLoginForm.cleaned_data['username']
+            # Menyimpan sesi (session) di server
+            request.session['username'] = username
             return render(request, 'loggedin.html', {"username" : username})
         else:
-            # JIKA GAGAL: Tetap di halaman form, dan bawa pesan error-nya!
+            # Jika form tidak valid, kembali ke halaman login
             return render(request, 'login.html', {"form": MyLoginForm})
             
+    # Jika method GET (akses URL langsung)
+    MyLoginForm = LoginForm()
+    return render(request, 'login.html', {"form": MyLoginForm})
+
+def formView(request):
+    # Mengecek apakah user sudah memiliki sesi 'username' yang aktif
+    if request.session.has_key('username'):
+        username = request.session['username']
+        return render(request, 'loggedin.html', {"username" : username})
     else:
-        # Jika baru pertama kali buka link
+        # Jika belum ada sesi, tampilkan form login
         MyLoginForm = LoginForm()
         return render(request, 'login.html', {"form": MyLoginForm})
+
+def logout(request):
+    # Menghapus sesi 'username' untuk melakukan logout
+    try:
+        del request.session['username']
+    except KeyError:
+        pass
+    
+    # Menampilkan pesan berhasil logout
+    return HttpResponse("<strong>You are logged out.</strong> <br><br> <a href='/connection/'>Kembali ke Login</a>")
+    
+def SaveProfile(request):
+   saved = False
+   
+   if request.method == "POST":
+      # PENTING: Tambahkan request.FILES untuk menangkap file yang diunggah
+      MyProfileForm = ProfileForm(request.POST, request.FILES)
+      
+      if MyProfileForm.is_valid():
+         profile = Profile()
+         profile.name = MyProfileForm.cleaned_data["name"]
+         profile.picture = MyProfileForm.cleaned_data["picture"]
+         profile.save()
+         saved = True
+   else:
+      MyProfileForm = ProfileForm()
+		
+   # Menggunakan locals() untuk mengirim semua variabel lokal (seperti 'saved') ke template
+   return render(request, 'saved.html', locals())
+
+# Angka di dalam kurung adalah durasi cache dalam detik (contoh: 30 detik)
+@cache_page(30)
+def view_caching(request):
+    waktu_sekarang = datetime.datetime.now().strftime("%H:%M:%S")
+    teks = f"<h2>Halaman ini di-cache!</h2> <p>Waktu saat halaman ini dibuat: <b>{waktu_sekarang}</b></p> <p>Coba refresh browser terus menerus. Waktunya akan membeku selama 30 detik!</p>"
+    return HttpResponse(teks)
+
+def hello(request, Name):
+    today = datetime.datetime.now().date()
+    daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    # Mengambil data dari database berdasarkan parameter nama di URL
+    dreamreal = Dreamreal.objects.get(name=Name)
+
+    return render(request, 'hello.html', locals())
+
+def comment(request, object_pk):
+    # Mengambil data komentar berdasarkan ID (Primary Key)
+    mycomment = Comment.objects.get(pk=object_pk)
+    
+    # Menampilkan detail komentar di layar (Menggunakan format string f-string modern)
+    text = f"<strong>User :</strong> {mycomment.user_name} <br><br>"
+    text += f"<strong>Comment :</strong> {mycomment.comment}"
+    
+    return HttpResponse(text)
+
+def dreamreal_ajax(request):
+    # Jika ada pengiriman data dari AJAX (metode POST)
+    if request.method == "POST":
+        form = DreamrealForm(request.POST)
+        if form.is_valid():
+            # Simpan data ke database tabel Dreamreal
+            from myapp.models import Dreamreal
+            dr = Dreamreal()
+            dr.website = form.cleaned_data.get('website')
+            dr.name = form.cleaned_data.get('name')
+            dr.phonenumber = form.cleaned_data.get('phonenumber')
+            dr.save()
+            
+            # Kembalikan pesan sukses tanpa me-refresh halaman
+            pesan = f"Dreamreal Entry {dr.name} was successfully saved."
+            return JsonResponse({"status": "success", "message": pesan})
+        else:
+            return JsonResponse({"status": "error", "errors": form.errors})
+            
+    # Jika method GET (pertama kali membuka halaman)
+    form = DreamrealForm()
+    return render(request, 'dreamreal.html', {'form': form})

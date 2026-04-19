@@ -4,6 +4,7 @@ from . import views
 from myapp import views as myapp_views 
 from django.views.generic import TemplateView, ListView
 from myapp.models import Dreamreal
+from myapp.feeds import DreamrealCommentsFeed
 
 handler404 = views.handler404
 
@@ -28,7 +29,16 @@ urlpatterns = [
     path('attachemail/<str:emailto>/', myapp_views.sendEmailWithAttach, name='sendEmailWithAttach'),
     path('static-page/', TemplateView.as_view(template_name='static.html'), name='static'),
     path('dreamreals/', ListView.as_view(model=Dreamreal, template_name='dreamreal_list.html'), name='dreamreal_list'),
-    path('connection/', TemplateView.as_view(template_name='login.html'), name='connection'),
     path('login/', myapp_views.login, name='login'),
     path('myapp-login/', myapp_views.login, name='myapp_login'),
+    path('profile/', TemplateView.as_view(template_name='profile.html'), name='profile'),
+    path('saved/', myapp_views.SaveProfile, name='saved'),
+    path('connection/', myapp_views.formView, name='connection'),
+    path('logout/', myapp_views.logout, name='logout'),
+    path('test-cache/', myapp_views.view_caching, name='test_cache'),
+    path('comments/', include('django_comments.urls')),
+    path('hello/<str:Name>/', myapp_views.hello, name='hello'),
+    path('latest/comments/', DreamrealCommentsFeed(), name='latest_comments'),
+    path('comment/<int:object_pk>/', myapp_views.comment, name='comment'),
+    path('dreamreal/', myapp_views.dreamreal_ajax, name='dreamreal'),
 ]

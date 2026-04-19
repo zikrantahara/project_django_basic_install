@@ -24,3 +24,13 @@ class LoginForm(forms.Form):
         if not dbuser:
             raise forms.ValidationError("User does not exist in our db!")
         return username
+    
+class ProfileForm(forms.Form):
+   name = forms.CharField(max_length = 100)
+   picture = forms.ImageField() # Menggunakan ImageField untuk memvalidasi file gambar
+
+class DreamrealForm(forms.Form):
+    website = forms.CharField(max_length = 100)
+    name = forms.CharField(max_length = 100)
+    phonenumber = forms.CharField(max_length = 50)
+    email = forms.EmailField(max_length = 100)

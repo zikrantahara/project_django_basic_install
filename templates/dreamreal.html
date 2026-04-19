@@ -1,0 +1,38 @@
+<html>
+<head>
+    <title>Dreamreal AJAX Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body style="padding: 20px;">
+
+    <h3>Form Entry Dreamreal (AJAX)</h3>
+    <form id="my_form" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><button type="button" id="send_btn" style="padding: 5px 15px;">Send</button></p>
+    </form>
+
+    <script>
+        $(document).ready(function(){
+            $("#send_btn").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'dreamreal' %}", 
+                    data: $("#my_form").serialize(), // Mengambil semua isi form
+                    success: function(response){
+                        if(response.status === "success"){
+                            // Memunculkan pop-up alert sesuai instruksi modul
+                            alert(response.message);
+                            // Mengosongkan isian form setelah berhasil disimpan
+                            $("#my_form")[0].reset(); 
+                        } else {
+                            alert("Terjadi kesalahan pada isian form.");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>

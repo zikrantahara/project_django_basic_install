@@ -1,8 +1,9 @@
-{% extends "main_template.html" %}
+{% extends "base.html" %} {% load comments %}
 
-{% block title %}Halaman Hello{% endblock %}
+{% block title %}My Hello Page{% endblock %}
 
-{% block content %}
+{% block contents %}
+<div style="margin: 20px;">
     <h3>Hello World!!!</h3>
     <p>Hari ini adalah tanggal: <b>{{ today }}</b></p>
     
@@ -22,4 +23,21 @@
             <li>{{ day }}</li>
         {% endfor %}
     </ul>
+
+    <hr>
+
+    <h3>Our Dreamreal Entry:</h3>
+    <p><strong>Name :</strong> {{ dreamreal.name }}</p>
+    <p><strong>Website :</strong> {{ dreamreal.website }}</p>
+
+    <hr>
+    {% get_comment_count for dreamreal as comment_count %}
+    <p><strong>Number of comments : </strong> {{ comment_count }}</p>
+
+    <p><strong>List of comments :</strong></p>
+    {% render_comment_list for dreamreal %}
+
+    <br>
+    {% render_comment_form for dreamreal %}
+</div>
 {% endblock %}

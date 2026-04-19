@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django_comments',
     'myapp',
     'customers',
     'products',
@@ -120,8 +122,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
-# Konfigurasi pengiriman email ke terminal (untuk keperluan testing/praktikum)
+# Konfigurasi pengiriman email ke terminal
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Pengaturan untuk menyimpan file yang diunggah (Uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Pengaturan Database Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'tabel_cache_saya',
+    }
+}
+
+SITE_ID = 1
